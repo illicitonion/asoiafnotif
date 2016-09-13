@@ -10,6 +10,7 @@ import (
 	"net/http/httputil"
 	"net/smtp"
 	"strconv"
+	"time"
 
 	"golang.org/x/net/html"
 	"gopkg.in/xmlpath.v2"
@@ -165,14 +166,13 @@ func retryHTTPDo(client http.Client, req *http.Request) (resp *http.Response, er
 		resp, err = client.Do(req)
 		if err != nil {
 			log.Println("Error making HTTP request, maybe retrying: %v", err.Error())
-			continue
-		}
-		if resp.StatusCode != 200 {
+		} else if resp.StatusCode != 200 {
 			errBs, _ := httputil.DumpResponse(resp, true)
 			log.Println("Bad response to HTTP request, maybe retrying: %v", string(errBs))
-			continue
+		} else {
+			return
 		}
-		return
+		time.Sleep(5 * time.Second)
 	}
 	return
 }
