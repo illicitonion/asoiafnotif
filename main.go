@@ -118,7 +118,7 @@ func getNotifications(ipssessionfront, memberid, cfduid, passhash string) (int, 
 		Name:  "ips4_pass_hash",
 		Value: passhash,
 	})
-	resp, err := client.Do(req)
+	resp, err := retryHTTPDo(client, req)
 	if err != nil {
 		return 0, fmt.Errorf("error making HTTP request: %v", err)
 	}
@@ -158,6 +158,23 @@ func getNotifications(ipssessionfront, memberid, cfduid, passhash string) (int, 
 		return 0, fmt.Errorf("page structure probably changed, can't scrape notifications")
 	}
 	return 0, nil
+}
+
+func retryHTTPDo(client http.Client, req *http.Request) (resp *http.Response, err error) {
+	for i := 0; i < 5; i++ {
+		resp, err = client.Do(req)
+		if err != nil {
+			log.Println("Error making HTTP request, maybe retrying: %v", err.Error())
+			continue
+		}
+		if resp.StatusCode != 200 {
+			errBs, _ := httputil.DumpResponse(resp, true)
+			log.Println("Bad response to HTTP request, maybe retrying: %v", string(errBs))
+			continue
+		}
+		return
+	}
+	return
 }
 
 type emailer struct {
