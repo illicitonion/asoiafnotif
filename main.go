@@ -94,7 +94,7 @@ func checkAndNotify(ipssessionfront, memberid, cfduid, passhash, notifyEmail str
 		log.Printf("Emailing for %d notification(s)", notifications)
 	}
 	if notifications > 0 {
-		if emailErr := e.email(notifyEmail, "ASOIAF notifications", fmt.Sprintf("You have %d new notification(s)! Go check http://asoiaf.westeros.org/", notifications)); emailErr != nil {
+		if emailErr := e.email(notifyEmail, "ASOIAF notifications", fmt.Sprintf("You have %d new notification(s)! Go check https://asoiaf.westeros.org/", notifications)); emailErr != nil {
 			log.Fatal(err)
 		}
 	}
@@ -102,7 +102,7 @@ func checkAndNotify(ipssessionfront, memberid, cfduid, passhash, notifyEmail str
 
 func getNotifications(ipssessionfront, memberid, cfduid, passhash string) (int, error) {
 	var client http.Client
-	req, _ := http.NewRequest("GET", "http://asoiaf.westeros.org/index.php", nil)
+	req, _ := http.NewRequest("GET", "https://asoiaf.westeros.org/index.php", nil)
 	req.AddCookie(&http.Cookie{
 		Name:  "ips4_IPSSessionFront",
 		Value: ipssessionfront,
