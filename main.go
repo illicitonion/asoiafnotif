@@ -146,19 +146,14 @@ func getNotifications(ipssessionfront, memberid, cfduid, passhash string) (int, 
 		return strconv.Atoi(contents)
 	}
 	paths := xmlpath.MustCompile(`//node()[contains(@class, 'ipsNotificationCount')]`)
-	elements := 0
 	notifications := 0
 	iter := paths.Iter(xmlRoot)
 	for iter.Next() {
 		contents := iter.Node().String()
 		this, _ := strconv.Atoi(contents)
 		notifications += this
-		elements += 1
 	}
-	if elements == 0 || notifications > 1 {
-		return 0, fmt.Errorf("page structure probably changed, can't scrape notifications")
-	}
-	return 0, nil
+	return notifications, nil
 }
 
 func retryHTTPDo(client http.Client, req *http.Request) (resp *http.Response, err error) {
